@@ -163,11 +163,12 @@ app.factory("authLogin",['$rootScope','$http','$location','userData', function($
 
 	var authLogin = {};
 	authLogin.loginError = false;
-
+	authLogin.loading = false;
 
 	authLogin.login = function(username, password){
 		
 		authLogin.loginError = false;
+		authLogin.loading = true;
 
 		return $http({
 	        url: 'dist/php/generic/authentication.php',
@@ -185,7 +186,7 @@ app.factory("authLogin",['$rootScope','$http','$location','userData', function($
 
 	        	userData.getUserData().then(function(){
 					sessionStorage['user'] = JSON.stringify(userData.user);
-
+					authLogin.loading = false;
 					$location.path('/main/dashboard')
 				});
 
@@ -193,7 +194,8 @@ app.factory("authLogin",['$rootScope','$http','$location','userData', function($
 	        	
 	        }
 	        else{
-	        	authLogin.loginError = true
+	        	authLogin.loginError = true;
+	        	authLogin.loading = false;
 	        }
 	    
 	    }, function errorCallback(response) {
@@ -952,7 +954,7 @@ app.controller("loginController", ['$rootScope', '$scope', '$cookieStore','authL
 
 	$scope.username = "";
 	$scope.password= "";
-	$scope.loginError = false;
+	$scope.loginError = authLogin.loading;
 	// $rootscope.logginIn = false;
 	
 
@@ -966,9 +968,12 @@ app.controller("loginController", ['$rootScope', '$scope', '$cookieStore','authL
 		}
 		else{
 
+			$scope.loading = true
 			authLogin.login($scope.username, $scope.password).then(function(){
 				$scope.loginError = authLogin.loginError;
+				$scope.loading = authLogin.loading;
 			});
+
 
 		}
 	}
