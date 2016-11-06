@@ -1,0 +1,122 @@
+<div  class="content-wrapper">
+  <section class="content-header">
+    <h1>
+    My Lists
+    <small>Everything at one place</small>
+    </h1>
+    <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-list"></i> Home</a></li>
+    <li class="active">Lists</li>
+    </ol>
+  </section>
+  <section class="content">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box">
+          <!-- /.box-header -->
+          <div class="box-body">
+            <div class="input-group" style="margin: 10px 0px 10px 0px">
+              <input type="text" ng-model="searchList" class="form-control">
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-info btn-flat">Go!</button>
+                  </span>
+            </div>
+            <table id="example1" class="table table-bordered table-striped">
+              <thead>
+              <tr>
+                <th>List ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>List Count</th>
+                <th>Favourites Count</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="point in user.lists.results | filter: searchList" ng-click="showItems(point.id)">
+                <td>{{point.id}}</td>
+                <td>{{point.name}}</td>
+                <td>{{point.description}}</td>
+                <td>{{point.list_type}}</td>
+                <td>{{point.item_count}}</td>
+                <td>{{point.favorite_count}}</td>
+              </tr>
+              </tbody>
+              <tfoot>
+              <tr>
+                <th>List ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>List Count</th>
+                <th>Favourites Count</th>
+              </tr>
+              </tfoot>
+            </table>
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="box box-warning">
+            <div class="box-header with-border">
+              <h3 class="box-title">Add a New List</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div ng-if="addError" class="alert alert-danger alert-dismissible">
+                <h4><i class="icon fa fa-ban"></i> Oops something's not right!</h4>
+                Please recheck what you have submitted.
+              </div>
+              <form role="form">
+                <!-- text input -->
+                <div class="form-group">
+                  <label>Name</label>
+                  <input ng-model="name" type="text" class="form-control" placeholder="Enter the name of the list">
+                </div>
+                <!-- textarea -->
+                <div class="form-group">
+                  <label>Description</label>
+                  <textarea ng-model="description" class="form-control" rows="3" placeholder="Enter a description"></textarea>
+                </div>
+              </form>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <button type="submit" ng-click="addList()" class="btn btn-warning pull-right">Add</button>
+            </div>
+          </div>
+          <!-- /.box -->
+      </div>
+      <div class="col-md-6">
+        <div class="box box-danger">
+            <div class="box-header with-border">
+              <h3 class="box-title">Movies belonging to a list</h3>
+            </div>
+              
+            <div class="box-body">
+              <div ng-if="listItems.item_count && listItems.item_count !=0">
+                <h3>{{listItems.name}}</h3>
+                <div ng-repeat="item in listItems.items">
+                  <dl>
+                    <dt>{{item.original_title}}</dt>
+                    <dd>{{item.overview}}</dd>
+                  </dl>
+                </div>
+              </div>
+              <div ng-if="!listItems.item_count">
+                <p>No items in list</p>
+              </div>
+            </div>
+          </div>
+          <!-- /.box -->
+      </div>
+    </div>
+  </section>
+
+</div>

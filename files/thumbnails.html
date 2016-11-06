@@ -1,0 +1,74 @@
+<div  class="content-wrapper">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+	  <h1>
+		{{model.heading}}
+		<small>{{model.subheading}}</small>
+	  </h1>
+	  <ol class="breadcrumb">
+		<li><a href="#"><i class="fa {{model.icon}}"></i> Home</a></li>
+		<li class="active">{{model.category}}</li>
+		<li class="active">{{model.heading}}</li>
+	  </ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+	  <!-- Main row -->
+		<div class="row">
+		  	<div class="col-md-4" data-ng-repeat="value in model.list">
+		  		
+				<div class="box box-widget widget-user">
+					<a style="color:inherit;" data-toggle="modal" data-target="#myModal" ng-click="openModal(value.id, model.category)">
+					<!-- <div > -->
+					<div class="widget-user-header bg-black" style="background: url({{model.poster_url+value.poster_path}}) center center;background-size: cover"><span>
+					  	<h3 ng-if="value.original_title" class="widget-user-username">{{value.original_title}}</h3>
+					  	<h3 ng-if="value.original_name" class="widget-user-username">{{value.original_name}}</h3>
+					  	<h5 class="widget-user-desc">{{getGenreMapping(value.genre_ids, model.category)}}</h5>
+					  	<div class="list-container">
+						  	<ul>
+						  		<li ng-click="addToFavourites(model.category,value.id); $event.stopPropagation()"><i class="fa fa-4x fa-star feature" aria-hidden="true"></i></li>
+						  		<li ng-click="addToWatchList(model.category,value.id); $event.stopPropagation()"><i class="fa fa-4x fa-play feature" aria-hidden="true"></i></li>
+						  		<li ng-if="openListModal" ng-click="openListModal(value.id, model.category); $event.stopPropagation()"><i class="fa fa-4x fa-plus feature" aria-hidden="true"></i></li>
+						  	</ul>
+						</div>
+					  </span>
+					</div>
+					<div class="box-footer">
+					  	<div class="row">
+							<div class="col-sm-4 border-right">
+						  		<div class="description-block">
+									<h5 class="description-header">{{value.popularity | number : 0}}</h5>
+									<span class="description-text">POPULARITY</span>
+						  		</div>
+						  	<!-- /.description-block -->
+							</div>
+							<!-- /.col -->
+							<div class="col-sm-4 border-right">
+						  		<div class="description-block">
+									<h5 class="description-header">{{value.vote_count}}</h5>
+									<span class="description-text">VOTES</span>
+						  		</div>
+						  		<!-- /.description-block -->
+							</div>
+							<!-- /.col -->
+							<div class="col-sm-4">
+						  		<div class="description-block">
+									<h5 class="description-header">{{value.vote_average}}</h5>
+									<span class="description-text">AVERAGE</span>
+						  		</div>
+						  		<!-- /.description-block -->
+							</div>
+							<!-- /.col -->
+					  	</div>
+					  	<!-- /.row -->
+					</div>
+				  	<!-- </div> -->
+				  	</a>
+				</div>
+			
+		  	</div>
+		</div>
+	</section>
+	<!-- /.content -->
+</div>

@@ -1,0 +1,5 @@
+/home/aphasingnirvana/Downloads;video01.mp4;Action,Adventure,Animation;2015
+/home/aphasingnirvana/Downloads;Zootopia.2016.720p.Tehmovies.org.mkv;Action,Adventure;2016
+/home/aphasingnirvana/Downloads;Schindlers List (1993) 720p (Bia2Movies).mkv;Action,Adventure,Musical;2013
+/home/aphasingnirvana/Downloads;12 Angry Men 1957 720p BluRay.-IRHD-.mkv;Comedy;2012
+/home/aphasingnirvana/Downloads;I.Origins.2014.720p.WEB-DL.-IRHD-.mkv;Comedy,Romance;2012

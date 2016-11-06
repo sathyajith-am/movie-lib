@@ -1,0 +1,101 @@
+<div class="wrapper login-page">
+  <div class="row">
+    <div class="col-md-7 live-section" style="height: 100vh; background: #3c8dbc; background-size: cover">
+      <div class="row" style="height:50vh">
+        <div class="col-md-6 date">
+          <h1>6:45<span style="font-size:50px">A.M</span></h1>
+          <h2>Monday 26th, JANUARY</h2>
+        </div>
+        <div class="col-md-6 lists" style="height:100%; background-color: #0A99C3; margin:0">
+          <div class="row list list-even">
+            1. One Stop Shop!!
+          </div>
+          <div class="row list">
+            2. Check Out Movies and TV Shows
+          </div>
+          <div class="row list list-even">
+            3. Plug in Your Hard Disk and Watch the Magic
+          </div>
+          <div class="row list">
+            4. Make Custom Watch Lists
+          </div>
+          <div class="row list list-even">
+            5. Keep Track of Latest and Upcomming Stuff
+          </div>
+          <div class="row list">
+            6. Rearrange Your Folders with the click of a button
+          </div>
+        </div>
+      </div>
+      <div class="row" style="height:50vh">
+        <div class="col-md-6 contact">
+          <div class="row">
+            <h2>CONTACT US</h2>
+            <h4>Send us your email so we can get in touch.</h4>
+            <div class="input-group input-group-sm" style="margin: 20px;">
+              <input class="form-control" type="text">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-info btn-flat">Go!</button>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4"><i class="fa fa-4x fa-facebook"></i></div>
+            <div class="col-md-4"><i class="fa fa-4x fa-twitter"></i></div>
+            <div class="col-md-4"><i class="fa fa-4x fa-instagram"></i></div>
+          </div>
+        </div>
+        <div class="col-md-6 header">
+          <h1>MO<span style="font-size:50px">CHOO</span></h1>
+          <h2 style="color: #0CA7D3">think of stupid tagline</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="login-box">
+        <div class="login-logo">
+          LOGIN
+        </div>
+        <!-- /.login-logo -->
+        <div class="login-box-body">
+          <p class="login-box-msg">Sign in to start your session</p>
+
+          <div ng-if="loginError" class="alert alert-danger alert-dismissible">
+            <h4><i class="icon fa fa-ban"></i> Oops something's not right!</h4>
+            Please recheck your Credentials.
+          </div>
+          <form action="" method="">
+            <div class="form-group has-feedback">
+              <input ng-model="username" type="text" class="form-control" placeholder="User Name">
+              <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+              <input ng-model="password" type="password" class="form-control" placeholder="Password">
+              <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <a href="register.html" class="text-center">Register a new membership</a>
+              </div>
+              <!-- /.col -->
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <button type="button" ng-click="validate()" style="margin-top: 40px;" class="btn btn-primary btn-block btn-block btn-flat pull-right">Sign In</button>
+              </div>
+              <!-- /.col -->
+            </div>
+          </form>
+
+          <!-- /.social-auth-links -->
+
+      <!--     <a href="#">I forgot my password</a><br> -->
+          
+
+        </div>
+        <!-- /.login-box-body -->
+      </div>
+    </div>
+  </div>
+</div>
+
