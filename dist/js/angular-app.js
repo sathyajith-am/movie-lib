@@ -391,6 +391,36 @@ app.factory("galleryFactory",['$http', 'ModalService', function($http, ModalServ
 
 }]);
 
+
+app.factory("eventSource",function(){
+
+	var eventSource = {}
+	
+	eventSource.init = function(source_url){
+
+		eventSource.source = new EventSource(source_url);
+		
+	}
+
+	eventSource.EventListener = function(event,callback){		
+		eventSource.source.addEventListener(event,callback,false);
+	}
+	eventSource.close = function(){
+
+		if(eventSource.source)
+		{
+			return eventSource.source.close();
+		}
+		else
+			return false;
+
+	}
+
+	return eventSource;
+
+});
+
+
 app.controller("mainController", ['$rootScope', '$scope', '$http', function($rootScope, $scope, $http) {
 	$rootScope.$on('$stateChangeStart', function(event, toState) {
 	  	if ((toState.name !== 'login') && (!sessionStorage['session_id'])) {
@@ -445,11 +475,19 @@ app.controller("dashboardController", ['$rootScope', '$scope', '$http', 'gallery
 	
 }]);
 
-app.controller("directoryController", ['$rootScope', '$scope', '$http','addToList', function($rootScope, $scope, $http, addToList) {
+app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToList', 'eventSource', function($rootScope, $scope, $http, addToList, eventSource) {
 
 	$scope.user = JSON.parse(sessionStorage['user'])
-
+	$scope.result = [];
 	$scope.myFileUpload = null;	
+
+	$scope.updateList = function(msg){
+
+		$scope.$apply(function () {
+				console.log(JSON.parse(msg.data));
+                $scope.result.push(JSON.parse(msg.data));
+            });
+	}
 
 	$scope.fileUpload = function(){
 
@@ -464,8 +502,15 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http','addToLis
             
         }).then(function successCallback(response) {
 	        if(response.data !=-1){
-	        	alert("File Upload Successful")
-	        	$scope.displayResults();
+	        	alert("File Upload Successful");
+
+	        	eventSource.init('dist/php/core/upload_result.php');
+	        	eventSource.EventListener('update-list',$scope.updateList);
+	        	eventSource.EventListener('close-update-list',eventSource.close);
+	        	eventSource.EventListener('error',function(){
+	        		console.log("event-source Error");
+	        	});
+
 	        }
 	        else{
 	        	alert("File Upload Unsuccessful")
@@ -479,24 +524,24 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http','addToLis
 		
 	}
 
-	$scope.displayResults = function(){
+	// $scope.displayResults = function(){
 
-		$http({
-			//chaneg this to appropriate name
-            url: 'dist/php/core/output.json?rnd='+new Date().getTime(),
-            method: "GET",
-        }).then(function successCallback(response) {
-	        $scope.result = response.data;
+	// 	$http({
+	// 		//chaneg this to appropriate name
+ //            url: 'dist/php/core/output.json?rnd='+new Date().getTime(),
+ //            method: "GET",
+ //        }).then(function successCallback(response) {
+	//         $scope.result = response.data;
 	    	
-	    }, function errorCallback(response) {
-	    	console.log("Failed to obtain data.")
-	    });
+	//     }, function errorCallback(response) {
+	//     	console.log("Failed to obtain data.")
+	//     });
 
-	}
+	// }
 
 	$scope.openListModal = addToList.openListModal;
 
-	$scope.displayResults();
+	//$scope.displayResults();
 
 }]);
 
