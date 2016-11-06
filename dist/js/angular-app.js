@@ -345,15 +345,17 @@ app.factory("galleryFactory",['$http', 'ModalService', function($http, ModalServ
 	   	list: null
 	 };
 
-	galleryFactory.init = function(model,php_file){
+	galleryFactory.init = function(model,php_file,custom=false){
 		galleryFactory.model.heading = model.heading;
 		galleryFactory.model.subheading = model.subheading;
 		galleryFactory.model.category = model.category;
 		galleryFactory.model.icon = model.icon;
 		galleryFactory.model.poster_url = model.poster_url;
 		
-
-		return galleryFactory.populate(php_file)
+		if(!custom)
+			return galleryFactory.populate(php_file)
+		else
+			return ;
 	}
 
 	galleryFactory.populate = function(php_file){
@@ -477,11 +479,20 @@ app.controller("dashboardController", ['$rootScope', '$scope', '$http', 'gallery
 	
 }]);
 
-app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToList', 'eventSource', function($rootScope, $scope, $http, addToList, eventSource) {
+app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToList', 'eventSource', 'galleryFactory', function($rootScope, $scope, $http, addToList, eventSource, galleryFactory) {
 
 	$scope.user = JSON.parse(sessionStorage['user'])
 	$scope.result = [];
-	$scope.myFileUpload = null;	
+	$scope.myFileUpload = null;
+	$scope.poster_url = 'https://image.tmdb.org/t/p/w300';
+
+	var model = {
+		heading: "Overview",
+		subheading: "",
+		category: "",
+		icon: "fa-film",
+		poster_url: 'https://image.tmdb.org/t/p/w300'
+	}	
 
 	$scope.updateList = function(msg){
 
@@ -494,7 +505,7 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToLi
 	$scope.fileUpload = function(){
 
 		var file = $scope.myFile;
-
+		$scope.file_loading = true; // Use this for the loading animation.
         var data = new FormData();
         data.append('file', file);
 
@@ -504,18 +515,25 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToLi
             
         }).then(function successCallback(response) {
 	        if(response.data !=-1){
-	        	alert("File Upload Successful");
+	        	// alert("File Upload Successful");
 
 	        	eventSource.init('dist/php/core/upload_result.php');
 	        	eventSource.EventListener('update-list',$scope.updateList);
-	        	eventSource.EventListener('close-update-list',eventSource.close);
+	        	eventSource.EventListener('close-update-list',function(){
+	        		eventSource.close();
+	        		$scope.fileGenerated = true;
+	        		$scope.file_loading = false;
+	           	});
 	        	eventSource.EventListener('error',function(){
 	        		console.log("event-source Error");
+	        		$scope.file_loading = false;
+
 	        	});
 
 	        }
 	        else{
-	        	alert("File Upload Unsuccessful")
+	        	alert("File Upload Unsuccessful");
+	        	$scope.file_loading = false;
 	        }
 	    	
 	    }, function errorCallback(response) {
@@ -526,24 +544,31 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToLi
 		
 	}
 
-	// $scope.displayResults = function(){
+	$scope.displayResults = function(){
 
-	// 	$http({
-	// 		//chaneg this to appropriate name
- //            url: 'dist/php/core/output.json?rnd='+new Date().getTime(),
- //            method: "GET",
- //        }).then(function successCallback(response) {
-	//         $scope.result = response.data;
+		$http({
+			//chaneg this to appropriate name
+            url: 'dist/php/core/output.json?rnd='+new Date().getTime(),
+            method: "GET",
+        }).then(function successCallback(response) {
+	        $scope.result = response.data;
+	        $scope.fileGenerated = true;
 	    	
-	//     }, function errorCallback(response) {
-	//     	console.log("Failed to obtain data.")
-	//     });
+	    }, function errorCallback(response) {
+	    	console.log("Failed to obtain data.")
+	    });
 
-	// }
+	}
 
+
+
+	galleryFactory.init(model,'',true);
+	$scope.model = galleryFactory.model;
+	$scope.openModal = galleryFactory.openModal;
+		
 	$scope.openListModal = addToList.openListModal;
-
-	//$scope.displayResults();
+	
+	$scope.displayResults();
 
 }]);
 

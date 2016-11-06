@@ -41,7 +41,7 @@ function get_movie_details( $id, $root, $filename ){
 	$curl = curl_init();
 
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://api.themoviedb.org/3/movie/" . $id . "?append_to_response=videos%2Ccredits%2Crecommendations&language=en-US&api_key=18295317f7bea08c23f44598e143b3e3",
+	  CURLOPT_URL => "https://api.themoviedb.org/3/movie/" . $id . "?anguage=en-US&api_key=18295317f7bea08c23f44598e143b3e3",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_MAXREDIRS => 10,
@@ -67,7 +67,8 @@ function get_movie_details( $id, $root, $filename ){
 		$movie_detail["id"] = $response_decode["id"];
 		$movie_detail["title"] = $response_decode["original_title"];
 		$movie_detail["genres"] = $response_decode["genres"];
-		$movie_detail["type"] = "movie";
+		$movie_detail["poster_path"] = $response_decode["poster_path"];
+		$movie_detail["type"] = "Movies";
 		$movie_detail["root"] = $root;
 		$movie_detail["filename"] = $filename;
 		return $movie_detail;
@@ -78,7 +79,7 @@ function get_tv_details( $id , $root, $filename){
 	$curl = curl_init();
 
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://api.themoviedb.org/3/tv/". $id ."?append_to_response=videos%2Ccredits%2Crecommendations&language=en-US&api_key=18295317f7bea08c23f44598e143b3e3",
+	  CURLOPT_URL => "https://api.themoviedb.org/3/tv/". $id ."?language=en-US&api_key=18295317f7bea08c23f44598e143b3e3",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_MAXREDIRS => 10,
@@ -106,7 +107,8 @@ function get_tv_details( $id , $root, $filename){
 		$tv_detail["id"] = $response_decode["id"];
 		$tv_detail["title"] = $response_decode["name"];
 		$tv_detail["genres"] = $response_decode["genres"];
-		$tv_detail["type"] = "episode";
+		$tv_detail["poster_path"] = $response_decode["poster_path"];
+		$tv_detail["type"] = "TV Shows";
 		$tv_detail["root"] = $root;
 		$tv_detail["filename"] = $filename;
 		return $tv_detail;
@@ -121,26 +123,58 @@ function send_update($event,$message){
 	flush();
 }
 
+function check_id_exist($id){
 
+	global $output_dict;
+	
+	return array_key_exists($id, $output_dict);
+}	
+
+
+$out_exists = false;
+$json_out_data = array();
+$output_dict = array();
 
 //Decode JSON
-$string = file_get_contents('upload.json'); 
-$json_data = json_decode($string,true) or die('no upload file found!');
+$string = file_get_contents('upload.json') or die('no upload file found!'); 
+$json_data = json_decode($string,true); 
 
-$details = array();
+
+if(file_exists('output.json')) {
+	$out_exists = true;
+	$string = file_get_contents('output.json') or die('no output file found!');
+	// echo $string;
+    $json_out_data = json_decode($string,true); 
+    // echo $json_out_data;
+    foreach ($json_out_data as $index => $value) {
+    	$output_dict[$value['id']] = 1;
+    }
+    // var_dump($output_dict);
+}
+
+//$details = array();
 
 foreach ($json_data as $index => $moviearray) {
 		if($json_data[$index]["type"] == "movie"){
-			$movie_name = $json_data[$index]["title"];
-			$release_year = $json_data[$index]["year"];
+			$movie_name = array_key_exists("title",$json_data[$index]) ? $json_data[$index]["title"] : null;
+			 
+			$release_year = array_key_exists("year",$json_data[$index]) ? $json_data[$index]["year"] : null;
 			$root = $json_data[$index]["root"];
 			$filename = $json_data[$index]["root"];
-			$query = "movie?year=" . $release_year . "&query=" . urlencode($movie_name);
-			$id = search($query);
+			if($movie_name == null)
+				$id = -1;
+			else{
+
+				$query = "movie?year=" . $release_year . "&query=" . urlencode($movie_name);
+				$id = search($query);
+			}
 			if( $id != -1 ){
-				$result = get_movie_details($id, $root, $filename);
-				send_update('update-list',json_encode($result));
-				$details[] = $result;
+
+				if( ($out_exists && !check_id_exist($id)) || !$out_exists){
+					$result = get_movie_details($id, $root, $filename);
+					send_update('update-list',json_encode($result));
+					$json_out_data[] = $result;
+				}
 			}
 			else {
 				send_update('update-list','Invalid');
@@ -157,7 +191,12 @@ foreach ($json_data as $index => $moviearray) {
 			$query = "tv?query=" . urlencode($tv_show_name);
 			$id = search($query);
 			if( $id != -1 ){
-				$details[] = get_tv_details($id, $root, $filename);
+				
+				if( ($out_exists && !check_id_exist($id)) || !$out_exists){
+					$result = get_tv_details($id, $root, $filename);
+					send_update('update-list',json_encode($result));
+					$json_out_data[] = $result;
+				}
 			}
 			else {
 				send_update('update-list','Invalid');
@@ -169,8 +208,8 @@ foreach ($json_data as $index => $moviearray) {
 }
 
 //echo json_encode($details);
-$json_output = fopen("output.json", "w+") or die("Unable to open file");
-fwrite($json_output,  json_encode($details));
+$json_output = fopen("output.json", "w") or die("Unable to open file");
+fwrite($json_output, json_encode($json_out_data));
 fclose($json_output);
 
 send_update('close-update-list','Close');
