@@ -485,21 +485,34 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToLi
 	$scope.result = [];
 	$scope.myFileUpload = null;
 	$scope.poster_url = 'https://image.tmdb.org/t/p/w300';
+	$scope.file_loading = false; 
 
 	var model = {
 		heading: "Overview",
 		subheading: "",
 		category: "",
-		icon: "fa-film",
+		icon: "",
 		poster_url: 'https://image.tmdb.org/t/p/w300'
 	}	
 
 	$scope.updateList = function(msg){
 
 		$scope.$apply(function () {
-				console.log(JSON.parse(msg.data));
-                $scope.result.push(JSON.parse(msg.data));
-            });
+			//console.log(JSON.parse(msg.data));
+
+			res = JSON.parse(msg.data);
+
+			if(res.media_type == "movie"){
+        		category = "Movies"
+        	}
+        	else if(res.media_type == "tv"){
+        		category = "TV Shows"
+        	}
+        	console.log(res);
+			//msg.data.genre_names = $rootScope.getGenreMapping(msg.data.genre_ids, category);
+			res.genre_names = $rootScope.getGenreMapping(res.genre_ids, category);
+            $scope.result.push(res);
+        });
 	}
 
 	$scope.fileUpload = function(){
@@ -517,7 +530,7 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToLi
 	        if(response.data !=-1){
 	        	// alert("File Upload Successful");
 
-	        	eventSource.init('dist/php/core/upload_result.php');
+	        	eventSource.init('dist/php/core/upload_result1.php');
 	        	eventSource.EventListener('update-list',$scope.updateList);
 	        	eventSource.EventListener('close-update-list',function(){
 	        		eventSource.close();
@@ -552,6 +565,17 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToLi
             method: "GET",
         }).then(function successCallback(response) {
 	        $scope.result = response.data;
+	        angular.forEach($scope.result, function(res){
+
+	        	if(res.media_type == "movie"){
+	        		category = "Movies"
+	        	}
+	        	else if(res.media_type == "tv"){
+	        		category = "TV Shows"
+	        	}
+
+	        	res.genre_names = $rootScope.getGenreMapping(res.genre_ids, category)
+	        });
 	        $scope.fileGenerated = true;
 	    	
 	    }, function errorCallback(response) {
@@ -843,7 +867,7 @@ app.controller('ModalController', ['$scope', '$http', 'close', 'id','category', 
 
 	$scope.populate = function(){
 		
-		if($scope.category == "Movies"){
+		if($scope.category == "Movies" || $scope.category == "movie"){
 			$http({
 		        url: 'dist/php/movies/movie_details.php?movie_id='+$scope.id,
 	    		method: "GET"
@@ -855,7 +879,7 @@ app.controller('ModalController', ['$scope', '$http', 'close', 'id','category', 
 		    	console.log("Failed to obtain data.")
 		    });
 		}
-		else if($scope.category == "TV Shows"){
+		else if($scope.category == "TV Shows" || $scope.category == "tv"){
 			$http({
 		        url: 'dist/php/tv/tv_details.php?tv_id='+$scope.id,
 	    		method: "GET"

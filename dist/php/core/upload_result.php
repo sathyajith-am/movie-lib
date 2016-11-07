@@ -1,6 +1,6 @@
 <?php
 
-header('Content-Type: text/event-stream');
+//header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 
 function search($query){

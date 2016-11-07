@@ -2,9 +2,10 @@
 
 function getInputJson(){
 
-	$output = exec("python guess.py");
+	$output = exec("/Library/Frameworks/Python.framework/Versions/2.7/bin/python guess.py");
 	return $output;
 }
+
 
 
 if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
