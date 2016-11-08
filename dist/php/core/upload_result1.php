@@ -117,6 +117,7 @@ foreach ($json_data as $index => $moviearray) {
 $json_output = fopen("output.json", "w") or die("Unable to open file");
 fwrite($json_output, json_encode($json_out_data));
 fclose($json_output);
+chmod('output.json', 0777);
 
 send_update('close-update-list','Close');
 ?>

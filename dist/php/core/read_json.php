@@ -31,6 +31,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
 	$json_output = fopen("upload.json", "w+") or die("Unable to open file");	
 	fwrite($json_output,$json);
 	fclose($json_output);
+	//chmod('upload.json', 0777);
 
 }
 else{

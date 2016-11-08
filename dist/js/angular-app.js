@@ -533,14 +533,20 @@ app.controller("directoryController", ['$rootScope', '$scope', '$http', 'addToLi
 	        	eventSource.init('dist/php/core/upload_result1.php');
 	        	eventSource.EventListener('update-list',$scope.updateList);
 	        	eventSource.EventListener('close-update-list',function(){
-	        		eventSource.close();
-	        		$scope.fileGenerated = true;
-	        		$scope.file_loading = false;
+	        		
+	        		$scope.$apply(function () {
+	        			eventSource.close();
+	        			$scope.fileGenerated = true;
+	        			$scope.file_loading = false;
+	        		});
+	        		
 	           	});
 	        	eventSource.EventListener('error',function(){
-	        		console.log("event-source Error");
-	        		$scope.file_loading = false;
-
+	        		
+	        		$scope.$apply(function () {
+	        			console.log("event-source Error");
+	        			$scope.file_loading = false;
+	        		});
 	        	});
 
 	        }
